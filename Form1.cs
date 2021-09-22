@@ -52,16 +52,34 @@ namespace Hmmm
         }
 
         private int _keyCounter = 0;
+        private int cooldownMultiplier = 1;
+        private int cooldown = 5;//seconds 
+        private int playCount = 0;
+        private DateTime _lastRun;
         private void HandleHotkey()
         {
             _keyCounter++;
-            if (_keyCounter > 10)
+
+            var stamp = DateTime.Now;
+
+            if (_keyCounter > 10 && Math.Abs((_lastRun - stamp).Seconds) > (cooldown * cooldownMultiplier))
             {
                 //play sound;
                 System.Diagnostics.Debug.WriteLine("Hotkey pressed");
                 var audio = new SoundPlayer(Resource2.ResourceManager.GetStream("Meow"));
                 audio.Play();
+
+                _lastRun = stamp;
+                playCount++;
+
+                if (playCount > 7)
+                    cooldownMultiplier = 60;//no more than once every 5 minutes
             }
+
+            //takes longer between keypress for less annoyingness
+            //if (_keyCounter > 10)
+            //    if (_keyCounter % 30 == 0) cooldownMultiplier++;
+
         }
 
     }
